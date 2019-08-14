@@ -1,38 +1,44 @@
 <?xml version="1.0"?>
 <package>
     <name>TLSoft_BarionPayment</name>
-    <version>0.5.5</version>
+    <version>0.5.6</version>
     <stability>stable</stability>
     <license uri="http://opensource.org/licenses/osl-3.0.php">OSL</license>
     <channel>community</channel>
     <extends/>
     <summary>Accepts payment trough Barion's (www.barion.com) Payment Gateway.</summary>
-    <description>A payment gateway solution for Barion system (https://www.barion.com/). It also adds Barion as a payment method in checkout. You can only pay in HUF, online refunds not supported at the moment.&#xD;
+    <description>&lt;h2&gt;Barion Payment Gateway&lt;/h2&gt;&#xD;
+    A payment gateway solution for Barion system (https://www.barion.com/). It also adds Barion as a payment method in checkout. You can pay in HUF, EUR or USD, online refunds not supported at the moment.&lt;br&gt;&lt;br&gt;&#xD;
 &#xD;
-Features:&#xD;
+Features:&lt;br&gt;&lt;br&gt;&#xD;
 &#xD;
-- Your customers now can pay with their Barion account!&#xD;
-- Transaction History in magento admin&#xD;
-- Translation ready (hungarian translation added)&#xD;
+- Your customers now can pay with their Barion account!&lt;br&gt;&#xD;
+- Transaction History in magento admin&lt;br&gt;&#xD;
+- Translation ready (hungarian translation added)&lt;br&gt;&lt;br&gt;&#xD;
 &#xD;
-Notes:&#xD;
+Notes:&lt;br&gt;&lt;br&gt;&#xD;
 &#xD;
-- Barion accepts only HUF&#xD;
-- CURL required to use this module&#xD;
+- Barion accepts only HUF, EUR and USD&lt;br&gt;&#xD;
+- CURL required to use this module&lt;br&gt;&lt;br&gt;&#xD;
 &#xD;
-Funkci&#xF3;k:&#xD;
-- V&#xE1;s&#xE1;rl&#xF3;id most m&#xE1;r a Barion fi&#xF3;kjuk haszn&#xE1;lat&#xE1;val is tudnak fizetni!&#xD;
-- Tranzakci&#xF3; t&#xF6;rt&#xE9;net a magento adminisztr&#xE1;ci&#xF3;s fel&#xFC;let&#xE9;n.&#xD;
-- Tetsz&#x151;leges nyelvre ford&#xED;that&#xF3; (magyar nyelvi ford&#xED;t&#xE1;s j&#xE1;r a modulhoz)&#xD;
+&lt;hr&gt;&#xD;
 &#xD;
-Megjegyz&#xE9;s:&#xD;
-- A Barion jelenleg csak forintot fogad el! &#xD;
-- CURL sz&#xFC;ks&#xE9;ges a modul haszn&#xE1;lat&#xE1;hoz.</description>
-    <notes>Replaced old /Payment/GetTransactionState with /v2/Payment/GetTransactionState.</notes>
+Funkci&#xF3;k:&lt;br&gt;&#xD;
+- V&#xE1;s&#xE1;rl&#xF3;id most m&#xE1;r a Barion fi&#xF3;kjuk haszn&#xE1;lat&#xE1;val is tudnak fizetni!&lt;br&gt;&#xD;
+- Tranzakci&#xF3; t&#xF6;rt&#xE9;net a magento adminisztr&#xE1;ci&#xF3;s fel&#xFC;let&#xE9;n.&lt;br&gt;&#xD;
+- Tetsz&#x151;leges nyelvre ford&#xED;that&#xF3; (magyar nyelvi ford&#xED;t&#xE1;s j&#xE1;r a modulhoz)&lt;br&gt;&#xD;
+&lt;br&gt;&#xD;
+Megjegyz&#xE9;s:&lt;br&gt;&#xD;
+- A Barion jelenleg csak forintot, doll&#xE1;rt &#xE9;s eur&#xF3;t fogad el!&#xD;
+&lt;br&gt;- CURL sz&#xFC;ks&#xE9;ges a modul haszn&#xE1;lat&#xE1;hoz.&lt;br&gt;&lt;/div&gt;</description>
+    <notes>Fixed:&#xD;
+- magento order email sending issue.&#xD;
+Added:&#xD;
+- EUR and USD currency</notes>
     <authors><author><name>Laszlo Opauszki</name><user>MAG000294151</user><email>info@tlsoft.hu</email></author></authors>
-    <date>2016-02-09</date>
-    <time>09:21:40</time>
-    <contents><target name="magecommunity"><dir name="TLSoft"><dir name="BarionPayment"><dir name="Block"><dir name="Adminhtml"><dir name="Barionpayment"><file name="Grid.php" hash="b107b231362762c4ee1967f5b3fcf098"/><file name="Grid2.php" hash="d4d8a56e5e5d87f6f356901241c7e74d"/><dir name="History"><file name="Grid.php" hash="f3173c80e8af496739a06e416aa64cd1"/></dir><file name="History.php" hash="d2e0cc3fb68cf32117eb244bbe4ba4f4"/></dir><file name="Barionpayment.php" hash="cabb599fcd67ff7baaa20d580ce055e5"/><dir name="Widget"><dir name="Grid"><dir name="Column"><dir name="Renderer"><file name="Action2.php" hash="ce81031032a96ac825551e772f248a71"/></dir></dir></dir></dir></dir><file name="Info.php" hash="a2b84b75c0df5b442251e2b9c37c856c"/><file name="Redirection.php" hash="92678ed9ea10ca8f05bf415ca0ad3bdc"/></dir><dir name="Helper"><file name="Data.php" hash="bd57632ba4f3b54b22cfd0e603d34ea0"/></dir><dir name="Model"><dir name="Mysql4"><dir name="Transactions"><file name="Collection.php" hash="abfdf0e97ba8451c4bfa92d2009486cd"/><dir name="History"><file name="Collection.php" hash="d1b0cd3e0139bacf89ecfd24f1de7651"/></dir><file name="History.php" hash="d1fedb822f0e46649fcd65b25efaa1f0"/></dir><file name="Transactions.php" hash="e9f3a2f8d6bd109a61d1df4a459e2d61"/></dir><file name="Observer.php" hash="ca1943090703c7ebe3ed9c891bc37f7e"/><file name="Paymentmethod.php" hash="96ac599b8081a2c4ae1da00bf22122d7"/><file name="Paymentstatus.php" hash="e3fad04a1b75e9c4fc569ac278c1975a"/><dir name="Resource"><dir name="Transactions"><file name="Collection.php" hash="57981931e8e3655a5d7dd5c3a5372366"/><dir name="History"><file name="Collection.php" hash="73dd5ac03fc2b718b72bb8970e549b5f"/></dir><file name="History.php" hash="bc54255a336d878bf7290beb1fc94cb8"/></dir><file name="Transactions.php" hash="4bbd288e36bce40adb569cb420bcabf9"/></dir><dir name="Transactions"><file name="History.php" hash="f1cc20c3476805a6d023e041f14ef356"/></dir><file name="Transactions.php" hash="43bbec84324cbc4540e9a3ee7bc1c7ab"/></dir><dir name="controllers"><dir name="Adminhtml"><file name="BarionpaymentController.php" hash="3ba66ded6d5b6131deb817bfc17c33de"/></dir><file name="RedirectionController.php" hash="f0d38de26a15fd5eaccf7385a7386b4e"/></dir><dir name="etc"><file name="adminhtml.xml" hash="266a47af9d31b926d17e1781dcb10a23"/><file name="config.xml" hash="006cba587bb8aea6d854625179c6d49b"/><file name="system.xml" hash="98e6e0d1fcce7535f70a295840b1282d"/></dir><dir name="sql"><dir name="tlbarion_setup"><file name="install-0.0.1.php" hash="bf1b43d099650052ba5dcbc6513726e0"/><file name="mysql-install-0.0.1.php" hash="78b6e464ac10ee5315f8d6a0be691cbd"/><file name="mysql4-install-0.0.1.php" hash="78b6e464ac10ee5315f8d6a0be691cbd"/><file name="mysql4-install-0.0.2.php" hash="6b8f37202a9063f4ee2407222f1c5758"/><file name="mysql4-upgrade-0.0.1-0.0.2.php" hash="6b8f37202a9063f4ee2407222f1c5758"/><file name="mysql4-upgrade-0.5.2-0.5.3.php" hash="378a3a35e971d03d99d84e4ae3da3346"/></dir></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="TLSoft_BarionPayment.xml" hash="52c5515b4c66c76c2e183e9f9a292bae"/></dir></target><target name="magedesign"><dir name="frontend"><dir name="base"><dir name="default"><dir name="template"><dir name="tlsoft"><dir name="tlbarion"><file name="info.phtml" hash="3569cceafc3e84e3f1521b12a2f7ed91"/></dir></dir></dir></dir></dir></dir><dir name="adminhtml"><dir name="default"><dir name="default"><dir name="template"><dir name="tlsoft"><dir name="tlbarion"><file name="info.phtml" hash="575093b0af6579538984755ff13a1355"/><dir name="pdf"><file name="info.phtml" hash="f442bad3b55a6680c112745c7a42ea71"/></dir></dir></dir></dir><dir name="layout"><file name="tlbarion.xml" hash="508343ee53342afa67507ef7477e3938"/></dir></dir></dir></dir></target><target name="magelocale"><dir name="hu_HU"><file name="tlsoft_tlbarion.csv" hash="548a76755e902abae496f09e6eca89a4"/></dir><dir name="en_US"><file name="tlsoft_tlbarion.csv" hash="379fa0aa0c37a53456cc37812c733667"/></dir></target><target name="mage"><dir name="var"><dir name="uploads"><file name="barion.crt" hash="7665959c4ea93b415742697d66382d7b"/><file name="barion_test.crt" hash="e87d1c6fb65d4e26db19fc7d24a735dd"/></dir></dir></target></contents>
+    <date>2017-04-05</date>
+    <time>09:52:10</time>
+    <contents><target name="magecommunity"><dir name="TLSoft"><dir name="BarionPayment"><dir name="Block"><dir name="Adminhtml"><dir name="Barionpayment"><file name="Grid.php" hash="b107b231362762c4ee1967f5b3fcf098"/><file name="Grid2.php" hash="d4d8a56e5e5d87f6f356901241c7e74d"/><dir name="History"><file name="Grid.php" hash="f3173c80e8af496739a06e416aa64cd1"/></dir><file name="History.php" hash="d2e0cc3fb68cf32117eb244bbe4ba4f4"/></dir><file name="Barionpayment.php" hash="cabb599fcd67ff7baaa20d580ce055e5"/><dir name="Widget"><dir name="Grid"><dir name="Column"><dir name="Renderer"><file name="Action2.php" hash="ce81031032a96ac825551e772f248a71"/></dir></dir></dir></dir></dir><file name="Form.php" hash="c67d7ddbca919a406709243a7578db0a"/><file name="Info.php" hash="a2b84b75c0df5b442251e2b9c37c856c"/><file name="Redirection.php" hash="92678ed9ea10ca8f05bf415ca0ad3bdc"/></dir><dir name="Helper"><file name="Data.php" hash="e1203c9aab49f4ac3b982fe7dfa16c1f"/></dir><dir name="Model"><dir name="Mysql4"><dir name="Transactions"><file name="Collection.php" hash="abfdf0e97ba8451c4bfa92d2009486cd"/><dir name="History"><file name="Collection.php" hash="d1b0cd3e0139bacf89ecfd24f1de7651"/></dir><file name="History.php" hash="d1fedb822f0e46649fcd65b25efaa1f0"/></dir><file name="Transactions.php" hash="e9f3a2f8d6bd109a61d1df4a459e2d61"/></dir><file name="Observer.php" hash="ca1943090703c7ebe3ed9c891bc37f7e"/><file name="Paymentmethod.php" hash="5edd07040e9fb607cbd70cc1608a6851"/><file name="Paymentstatus.php" hash="e3fad04a1b75e9c4fc569ac278c1975a"/><dir name="Transactions"><file name="History.php" hash="f1cc20c3476805a6d023e041f14ef356"/></dir><file name="Transactions.php" hash="43bbec84324cbc4540e9a3ee7bc1c7ab"/></dir><dir name="controllers"><dir name="Adminhtml"><file name="BarionpaymentController.php" hash="3ba66ded6d5b6131deb817bfc17c33de"/></dir><file name="RedirectionController.php" hash="f0d38de26a15fd5eaccf7385a7386b4e"/></dir><dir name="etc"><file name="adminhtml.xml" hash="266a47af9d31b926d17e1781dcb10a23"/><file name="config.xml" hash="006cba587bb8aea6d854625179c6d49b"/><file name="system.xml" hash="98e6e0d1fcce7535f70a295840b1282d"/></dir><dir name="sql"><dir name="tlbarion_setup"><file name="mysql4-install-0.0.1.php" hash="78b6e464ac10ee5315f8d6a0be691cbd"/><file name="mysql4-upgrade-0.5.2-0.5.3.php" hash="378a3a35e971d03d99d84e4ae3da3346"/></dir></dir></dir></dir></target><target name="magedesign"><dir name="frontend"><dir name="base"><dir name="default"><dir name="template"><dir name="tlsoft"><dir name="tlbarion"><file name="form.phtml" hash="4b6a14872f5f72f8fdfe1e9abfde9d72"/><file name="info.phtml" hash="3569cceafc3e84e3f1521b12a2f7ed91"/></dir></dir></dir></dir></dir></dir><dir name="adminhtml"><dir name="default"><dir name="default"><dir name="layout"><file name="tlbarion.xml" hash="508343ee53342afa67507ef7477e3938"/></dir><dir name="template"><dir name="tlsoft"><dir name="tlbarion"><file name="info.phtml" hash="575093b0af6579538984755ff13a1355"/><dir><dir name="pdf"><file name="info.phtml" hash="f442bad3b55a6680c112745c7a42ea71"/></dir></dir></dir></dir></dir></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="TLSoft_BarionPayment.xml" hash="52c5515b4c66c76c2e183e9f9a292bae"/></dir></target><target name="magelocale"><dir name="en_US"><file name="tlsoft_tlbarion.csv" hash="379fa0aa0c37a53456cc37812c733667"/></dir><dir name="hu_HU"><file name="tlsoft_tlbarion.csv" hash="548a76755e902abae496f09e6eca89a4"/></dir></target><target name="mage"><dir name="var"><dir name="uploads"><file name="barion.crt" hash="7665959c4ea93b415742697d66382d7b"/><file name="barion_test.crt" hash="e87d1c6fb65d4e26db19fc7d24a735dd"/></dir></dir></target></contents>
     <compatible/>
-    <dependencies><required><php><min>5.2.13</min><max>5.6.3</max></php></required></dependencies>
+    <dependencies><required><php><min>5.2.13</min><max>7.1.3</max></php></required></dependencies>
 </package>

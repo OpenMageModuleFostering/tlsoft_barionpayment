@@ -134,10 +134,11 @@ class TLSoft_BarionPayment_Helper_Data extends Mage_Core_Helper_Abstract
 			$order->setState(Mage_Sales_Model_Order::STATE_PROCESSING);
 			$order->setStatus('processing');
 			$order->save();
-			if($order->getId()){
-				$order->sendNewOrderEmail();
-			}
 		}
+		
+		if (is_object($order)) {
+            $order->sendNewOrderEmail()->addStatusHistoryComment("")->setIsCustomerNotified(true)->save();
+        }
 	}
 		
 	public function getCurrentOrder()

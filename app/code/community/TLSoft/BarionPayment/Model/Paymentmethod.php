@@ -14,11 +14,12 @@ class TLSoft_BarionPayment_Model_Paymentmethod extends Mage_Payment_Model_Method
 	protected $_ordercurrency			= "";//order's currency code
 	protected $_canRefundInvoicePartial = false;
 	
-	protected $_infoBlockType = "tlbarion/info";
+	protected $_infoBlockType = 'tlbarion/info';
+	protected $_formBlockType = 'tlbarion/form';
 
 	public function canUseForCurrency($currencyCode)
     {//pénznem ellenõrzése
-		if ($currencyCode == "HUF"){
+		if ($currencyCode == "HUF" || $currencyCode == "EUR" || $currencyCode == "USD"){
 			$session=Mage::getSingleton('checkout/session');
 			$session->setBarioncurrency($currencyCode);
 			return true;
@@ -84,8 +85,8 @@ class TLSoft_BarionPayment_Model_Paymentmethod extends Mage_Payment_Model_Method
 			$products[$i]["Description"]=$item->getName();
 			$products[$i]["Quantity"]=round($item->getQtyOrdered());
 			$products[$i]["Unit"]="db";
-			$products[$i]["UnitPrice"]=round($item->getPrice());
-			$products[$i]["ItemTotal"]=round($item->getRowTotal());
+			$products[$i]["UnitPrice"]=round($item->getPriceInclTax());
+			$products[$i]["ItemTotal"]=round($item->getRowTotalInclTax());
 			$i++;
 		}
 		$shipping = $order->getShippingInclTax();
@@ -98,8 +99,7 @@ class TLSoft_BarionPayment_Model_Paymentmethod extends Mage_Payment_Model_Method
 			$products[$i]["ItemTotal"]=round($shipping);
 		}
 
-		
-		$header = array("POSKey"=>$helper->getShopId($storeid),'PaymentType' => 'Immediate','PaymentWindow' => '00:30:00','GuestCheckOut' => true,'FundingSources' => Array('All'),'PaymentRequestId' => $lastorderid,'RedirectUrl' => Mage::getBaseUrl()."tlbarion/redirection/respond/","locale"=>"hu-HU","Transactions"=>array(array("POSTransactionId"=>$lastorderid,"Payee"=>$email,"Total"=>$ordertotal,"Items"=>$products)));//'CallbackUrl' => Mage::getBaseUrl()."tlbarion/redirection/respond/",
+		$header = array("POSKey"=>$helper->getShopId($storeid),'PaymentType' => 'Immediate','PaymentWindow' => '00:30:00','GuestCheckOut' => true,'FundingSources' => Array('All'),'PaymentRequestId' => $lastorderid,'RedirectUrl' => Mage::getBaseUrl()."tlbarion/redirection/respond/","currency"=>$currency,"locale"=>"hu-HU","Transactions"=>array(array("POSTransactionId"=>$lastorderid,"Payee"=>$email,"Total"=>$ordertotal,"Items"=>$products)));//'CallbackUrl' => Mage::getBaseUrl()."tlbarion/redirection/respond/",
 		
 		$products="";
 
