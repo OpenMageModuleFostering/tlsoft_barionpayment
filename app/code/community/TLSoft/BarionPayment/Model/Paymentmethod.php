@@ -32,13 +32,15 @@ class TLSoft_BarionPayment_Model_Paymentmethod extends Mage_Payment_Model_Method
 	{//ha nincs fent a certifikát fájl
 		$helper=$this->otpHelper();
 		$storeid = Mage::app()->getStore()->getStoreId();
-		$cert=$helper->getOtpKeyFile($storeid);
+		/*$cert=$helper->getOtpKeyFile($storeid);
 
 		if (empty($cert)){
 			return false;
 		}else{
 			return true;
-		}
+		}*/
+		
+		return true;
 	}
 	
 	public function initialize($paymentAction, $stateObject)
@@ -63,46 +65,61 @@ class TLSoft_BarionPayment_Model_Paymentmethod extends Mage_Payment_Model_Method
 	{//redirect url to k&h site
 		$helper = $this->otpHelper();
 		$order = $helper->getCurrentOrder();
+		if(!$order->getId())
+			return false;
 		$storeid = $order->getStoreId();
+		$email = $helper->getEmail($storeid);
 		$session = Mage::getSingleton('checkout/session');
 		$currency=$order->getOrderCurrencyCode();//GET Currency Code
-		$ordertotal = $this->getOrderTotal();
+		$ordertotal = round($order->getGrandTotal());
+
 		$locale = $helper->checkLocalCode();
-		$lastorderid = Mage::getSingleton('checkout/session')->getLastRealOrderId();
+		$lastorderid = $order->getIncrementId();
 		
-		$header = array("ApplicationId"=>$helper->getShopId($storeid),"Amount"=>$ordertotal,"ShopTransactionId"=>$lastorderid);
 		$products = array();
 		$items = $order->getAllVisibleItems();
 		$i=0;
 		foreach($items as $item){
 			$products[$i]["Name"]=$item->getName();
-			$products[$i]["Quantity"]=$item->getQtyOrdered();
-			$products[$i]["Price"]=$item->getPriceInclTax();
+			$products[$i]["Description"]=$item->getName();
+			$products[$i]["Quantity"]=round($item->getQtyOrdered());
+			$products[$i]["Unit"]="db";
+			$products[$i]["UnitPrice"]=round($item->getPrice());
+			$products[$i]["ItemTotal"]=round($item->getRowTotal());
 			$i++;
 		}
 		$shipping = $order->getShippingInclTax();
 		if($shipping>0){
 			$products[$i]["Name"]=$order->getShippingDescription();
+			$products[$i]["Description"]=$order->getShippingDescription();
 			$products[$i]["Quantity"]=1;
-			$products[$i]["Price"]=$shipping;
+			$products[$i]["Unit"]="db";
+			$products[$i]["UnitPrice"]=round($shipping);
+			$products[$i]["ItemTotal"]=round($shipping);
 		}
-		$header["Products"]=$products;
-		$products="";
-		$json = json_encode($header);
+
 		
-		$transid=$this->saveTrans(array('real_orderid'=>$lastorderid,'order_id'=>$order->getId(),'application_id'=>$helper->getShopId($storeid),'amount'=>$ordertotal,'ccy'=>$currency,'store_id'=>$storeid,'payment_status'=>"01",'created_at'=>Varien_Date::now()));
-		$this->saveTransHistory(array('transaction_id'=>$transid));
+		$header = array("POSKey"=>$helper->getShopId($storeid),'PaymentType' => 'Immediate','PaymentWindow' => '00:30:00','GuestCheckOut' => true,'FundingSources' => Array('All'),'PaymentRequestId' => $lastorderid,'RedirectUrl' => Mage::getBaseUrl()."tlbarion/redirection/respond/","locale"=>"hu-HU","Transactions"=>array(array("POSTransactionId"=>$lastorderid,"Payee"=>$email,"Total"=>$ordertotal,"Items"=>$products)));//'CallbackUrl' => Mage::getBaseUrl()."tlbarion/redirection/respond/",
+		
+		$products="";
+
+		$json = json_encode($header);
+
+		$transid=$this->saveTrans(array('real_orderid'=>$lastorderid,'order_id'=>$order->getId(),'application_id'=>$helper->getShopId($storeid),'amount'=>$ordertotal,'ccy'=>$currency,'store_id'=>$storeid,'payment_status'=>"01",'created_at'=>now()));
+		$this->saveTransHistory(array('transaction_id'=>$transid,'created_at'=>now()));
 		$result = $helper->callCurl($json,$storeid);
 		$resultarray = "";
 		if($result!=false){
 			$resultarray = json_decode($result,true);
-			if($resultarray["TransactionId"]!=""){
-				$this->updateTrans(array("bariontransactionid"=>$resultarray["TransactionId"]),$transid);
+			if(array_key_exists("PaymentId",$resultarray)){
+				$this->updateTrans(array("bariontransactionid"=>$resultarray["Transactions"][0]["TransactionId"]),$transid);
 				$url=$helper->getRedirectUrl($storeid);
-				return $url."?TransactionId=".$resultarray["TransactionId"]."&ShopTransactionId=".$lastorderid;
+				return $url."?id=".$resultarray["PaymentId"];
 			}
 			else{
-				$this->saveTransHistory(array('transaction_id'=>$transid,"error_message"=>$resultarray["ErrorList"]["ErrorMessage"],"error_number"=>$resultarray["ErrorList"]["ErrorNumber"]));
+				foreach($resultarray["Errors"] as $error){
+				$this->saveTransHistory(array('created_at'=>now(),'transaction_id'=>$transid,"error_message"=>$error["Description"],"error_number"=>$error["ErrorCode"]));
+				}
 				return false;
 			}
 		}

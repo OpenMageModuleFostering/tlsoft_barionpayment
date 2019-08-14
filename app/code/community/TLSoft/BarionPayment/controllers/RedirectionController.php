@@ -22,23 +22,22 @@ class TLSoft_BarionPayment_RedirectionController extends Mage_Core_Controller_Fr
 		$session = Mage::getSingleton('checkout/session');
 		$otppayment = Mage::getModel('tlbarion/paymentmethod');
 		$order = Mage::getModel('sales/order')->loadByIncrementId($session->getLastRealOrderId());
-		$otpdata=$otppayment->otpHelper()->processTransResult();
-		$otphelper = $otppayment->otpHelper();
-		if ($otpdata=="success"){
-				$otphelper->processOrderSuccess($order);
-				$this->_redirect('tlbarion/redirection/success', array('_secure'=>true));
+		if($order->getId()){
+			$otphelper = $otppayment->otpHelper();
+			$otpdata=$otphelper->processTransResult();
+			if ($otpdata=="success"){
+					$otphelper->processOrderSuccess($order);
+					$this->_redirect('tlbarion/redirection/success', array('_secure'=>true));
+				}
+			elseif($otpdata=="fail"){
+				$this->_redirect('tlbarion/redirection/cancel', array('_secure'=>true));
 			}
-		elseif($otpdata=="fail"){
-			if ($order->getId()&&$order->getState()!=Mage_Sales_Model_Order::STATE_CANCELED) {
-				$order->cancel()->save();
-				$lastQuoteId=Mage::getSingleton('checkout/session')->getLastQuoteId();
-				$quote = Mage::getModel('sales/quote')->load($lastQuoteId);
-				$quote->setIsActive(true)->save();
+			else{
+				$this->_redirect('tlbarion/redirection/cancel', array('_secure'=>true));
 			}
-			$this->_redirect('tlbarion/redirection/cancel', array('_secure'=>true));
 		}
 		else{
-			$this->_redirect('tlbarion/redirection/success', array('_secure'=>true));
+			$this->_redirect('tlbarion/redirection/cancel', array('_secure'=>true));
 		}
 	}
 	
@@ -57,7 +56,15 @@ class TLSoft_BarionPayment_RedirectionController extends Mage_Core_Controller_Fr
 	public function cancelAction()
 	{
 		$session = Mage::getSingleton('checkout/session');
-        $session->setQuoteId($session->getBarionPaymentPaymentmethodQuoteId(true));
+		$order = Mage::getModel('sales/order')->loadByIncrementId($session->getLastRealOrderId());
+		if ($order->getId()&&$order->getState()!=Mage_Sales_Model_Order::STATE_CANCELED) {
+			$order->cancel()->save();
+			$lastQuoteId=Mage::getSingleton('checkout/session')->getLastQuoteId();
+			$quote = Mage::getModel('sales/quote')->load($lastQuoteId);
+			$quote->setIsActive(true)->save();
+		}
+		/*$session = Mage::getSingleton('checkout/session');
+        $session->setQuoteId($session->getBarionPaymentPaymentmethodQuoteId(true));*/
         $this->_redirect('checkout/onepage/failure');
 	}
  

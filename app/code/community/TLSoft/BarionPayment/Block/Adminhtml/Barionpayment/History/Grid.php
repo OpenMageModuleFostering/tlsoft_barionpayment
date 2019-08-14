@@ -34,14 +34,14 @@ class TLSoft_BarionPayment_Block_Adminhtml_Barionpayment_History_Grid extends Ma
             'header'=> Mage::helper('tlbarion')->__('Error Message'),
             'width' => '',
             'type'  => 'text',
-            'index' => 'auth_number',
+            'index' => 'error_message',
         ));
 		
 		$this->addColumn('error_number', array(
             'header'=> Mage::helper('tlbarion')->__('Error Number'),
             'width' => '',
             'type'  => 'text',
-            'index' => 'response',
+            'index' => 'error_number',
         ));
 		
 		$this->addColumn('created_at', array(

@@ -3,26 +3,26 @@
     <modules>
         <TLSoft_BarionPayment>
 			<codepool>community</codepool>
-			<version>0.5.1</version>
+			<version>0.5.5</version>
         </TLSoft_BarionPayment>
     </modules>
     <global>
 		<models>
             <tlbarion>
                 <class>TLSoft_BarionPayment_Model</class>
-				<resourceModel>tlbarion_resource</resourceModel>
+				<resourceModel>tlbarion_mysql4</resourceModel>
             </tlbarion>
-			<tlbarion_resource>
-                <class>TLSoft_BarionPayment_Model_Resource</class>
+			<tlbarion_mysql4>
+                <class>TLSoft_BarionPayment_Model_Mysql4</class>
                 <entities>
                     <transactions>
-                        <table>tlbarion_payment_transactions</table>
+                        <table>tlsoft_barion_payment_transactions</table>
                     </transactions>
 					 <transactions_history>
-                        <table>tlbarion_payment_transactions_history</table>
+                        <table>tlsoft_barion_payment_transactions_history</table>
                     </transactions_history>
                 </entities>
-            </tlbarion_resource>
+            </tlbarion_mysql4>
         </models>
 		<blocks>
 			<tlbarion>

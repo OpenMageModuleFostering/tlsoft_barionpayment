@@ -5,14 +5,14 @@ class TLSoft_BarionPayment_Helper_Data extends Mage_Core_Helper_Abstract
 
 	const XML_PATH_EMAIL_IDENTITY               = 'sales_email/order/identity';
 	
-	protected $_testredirect = "https://test.barion.com/Payment/PayInShop/";
-	protected $_redirect = "https://barion.com/Payment/PayInShop/";
+	protected $_testredirect = "https://test.barion.com/pay";
+	protected $_redirect = "https://secure.barion.com/pay";
 	
-	protected $_testtransid = "https://api.test.barion.com/Payment/GetTransactionId";
-	protected $_transid = "https://api.barion.com/Payment/GetTransactionId";
+	protected $_testtransid = "https://api.test.barion.com/v2/payment/start";
+	protected $_transid = "https://api.barion.com/v2/payment/start";
 	
-	protected $_teststate = "https://api.test.barion.com/Payment/GetTransactionState";
-	protected $_state = "https://api.barion.com/Payment/Payment/GetTransactionState";
+	protected $_teststate = "https://api.test.barion.com/v2/Payment/GetTransactionState";
+	protected $_state = "https://api.barion.com/v2/Payment/GetTransactionState";
 	
 	public $_logfilename 			= "tlbarion.log";
 	
@@ -70,57 +70,58 @@ class TLSoft_BarionPayment_Helper_Data extends Mage_Core_Helper_Abstract
 	
 	public function processTransResult($order="",$transaction=array())
 	{
+		$helper = $this;	
 		$otppayment = Mage::getModel('tlbarion/paymentmethod');
 		
 		if(empty($order)){
 			$order = $this->getCurrentOrder();
 		}
 		
+		$storeid = $order->getStoreId();
+		
 		$storeId = $order->getStoreId();
 		if(is_array($transaction)){
 			$transaction = $otppayment->getTransModel()->loadByOrderId($order->getId());
 		}
+
 		$transid = $transaction->getEntityId();
 
 		$real_orderid = $transaction->getRealOrderid();
 
-		$header=array("TransactionId"=>$transaction->getBariontransactionid());
+		$params="?POSKey=".$helper->getShopId($storeid)."&TransactionId=".$transaction->getBariontransactionid();
 		
-		$json = json_encode($header);
+		$result = $this->callCurl2($params,$storeId);
 		
-		$result = $this->callCurl2($json,$storeId);
 		$resultarray = array();
+
 		$return="pending";
 		if($result!=false){
 			$resultarray = json_decode($result,true);
-			if($resultarray["Status"]==2){
+			if($resultarray["Status"]=="Succeeded"){
 				$return = "success";
-			}
-			elseif($resultarray["Status"]==1){
-				$return = "pending";
-			}
-			else{
-				$return = "fail";
-			}
-		}
-		if($return!='pending'){
-			if($return=='success'){
 				$status='02';
 			}
-			elseif($return=='fail'){
+			elseif($resultarray["Status"]=="Prepared"||$resultarray["Status"]=="Started"){
+				$return = "pending";
+				$status='01';
+			}elseif($resultarray["Status"]=="Failed"||$resultarray["Status"]=="Expired"||$resultarray["Status"]=="Canceled"||$resultarray["Status"]=="Rejected"){
+				$return = "fail";
 				$status='00';
-				if(array_key_exists("ErrorList",$resultarray)){
-					$otppayment->saveTransHistory(array('transaction_id'=>$transid,"error_message"=>$resultarray["ErrorList"]["ErrorMessage"],"error_number"=>$resultarray["ErrorList"]["ErrorNumber"]));
-				}
 			}
-			$otppayment->updateTrans(array('payment_status'=>$status),$transid);
+		}
+		if(!empty($resultarray["Errors"])){
+				$status='00';
+				$otppayment->saveTransHistory(array('transaction_id'=>$transid,"error_message"=>$resultarray["Errors"]["Description"],"error_number"=>$resultarray["Errors"]["ErrorCode"]));
+				$return = "fail";
 			//$this->_sendStatusMail($order);
 		}
+		$otppayment->updateTrans(array('payment_status'=>$status),$transid);
 		return $return;
 	}
 	
 	public function processOrderSuccess($order)
 	{
+
 		if ($order->canInvoice()) {
 			$invoice = $order->prepareInvoice();
 			$invoice->register()->capture();
@@ -149,6 +150,11 @@ class TLSoft_BarionPayment_Helper_Data extends Mage_Core_Helper_Abstract
 	public function getShopId($storeId)
 	{
 		return Mage::getStoreConfig('payment/tlbarion/shop_id',$storeId);
+	}
+	
+	public function getEmail($storeId)
+	{
+		return Mage::getStoreConfig('payment/tlbarion/email',$storeId);
 	}
 		
 	public function getOtpurl()
@@ -182,19 +188,19 @@ class TLSoft_BarionPayment_Helper_Data extends Mage_Core_Helper_Abstract
 		else{
 			$url = $this->_transid;
 		}
-		$cert = $this->getOtpKeyFile($storeId);
+		//$cert = $this->getOtpKeyFile($storeId);
 		try{
 				$options = array(
 					CURLOPT_RETURNTRANSFER => true,     // return web page
-					CURLOPT_HEADER         => 0,    // don't return headers
-					CURLOPT_FOLLOWLOCATION => 0,     // follow redirects
-					CURLOPT_SSL_VERIFYPEER => true,
-					CURLOPT_SSL_VERIFYHOST => 2,
-					CURLOPT_CAINFO		   => $cert,
+					CURLOPT_SSL_VERIFYPEER => false,
+					//CURLOPT_SSL_VERIFYHOST => 2,
 					CURLOPT_URL			   => $url,
 					CURLOPT_POST		   => 1,
+					CURLOPT_TIMEOUT		   => 30,
+					CURLOPT_CONNECTTIMEOUT => 20,
+					//CURLOPT_CAINFO		   => $cert,
 					CURLOPT_POSTFIELDS     => $json,
-					CURLOPT_HTTPHEADER     => array("Content-Type: application/json","Accept: application/json")
+					CURLOPT_HTTPHEADER     => array("Content-Type: application/json",'Content-Length: ' . strlen($json))
 				);
 				$ch = curl_init();
 				curl_setopt_array($ch,$options);
@@ -205,30 +211,32 @@ class TLSoft_BarionPayment_Helper_Data extends Mage_Core_Helper_Abstract
 					return $content;
 				}
 				else{
+					Mage::log("Barion curl error: ".$err);
 					return false;
 				}
 			}
 			catch(Exception $e){
+				Mage::log($e);
 				return false;
 			}
 	}
 	
-	public function callCurl2($json,$storeId)
+	public function callCurl2($params,$storeId)
 	{
 		$url = $this->getStateUrl($storeId);
-		$cert = $this->getOtpKeyFile($storeId);
+		//$cert = $this->getOtpKeyFile($storeId);
 		try{
 				$options = array(
 					CURLOPT_RETURNTRANSFER => true,     // return web page
-					CURLOPT_HEADER         => 0,    // don't return headers
-					CURLOPT_FOLLOWLOCATION => 0,     // follow redirects
-					CURLOPT_SSL_VERIFYPEER => true,
-					CURLOPT_SSL_VERIFYHOST => 2,
-					CURLOPT_CAINFO		   => $cert,
-					CURLOPT_URL			   => $url,
-					CURLOPT_POST		   => 1,
-					CURLOPT_POSTFIELDS     => $json,
-					CURLOPT_HTTPHEADER     => array("Content-Type: application/json","Accept: application/json")
+					CURLOPT_SSL_VERIFYPEER => false,
+					//CURLOPT_SSL_VERIFYHOST => 2,
+					CURLOPT_URL			   => $url.$params,
+					//CURLOPT_POST		   => 0,
+					CURLOPT_TIMEOUT		   => 30,
+					CURLOPT_CONNECTTIMEOUT => 20,
+					//CURLOPT_CAINFO		   => $cert,
+					//CURLOPT_POSTFIELDS     => $json,
+					//CURLOPT_HTTPHEADER     => array("Content-Type: application/json",'Content-Length: ' . strlen($json))
 				);
 				$ch = curl_init();
 				curl_setopt_array($ch,$options);

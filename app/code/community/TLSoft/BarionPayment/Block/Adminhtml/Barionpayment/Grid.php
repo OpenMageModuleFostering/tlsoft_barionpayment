@@ -52,13 +52,13 @@ class TLSoft_BarionPayment_Block_Adminhtml_Barionpayment_Grid extends Mage_Admin
             'index' => 'bariontransactionid',
         ));
 		
-		$this->addColumn('billingname', array(
+		/*$this->addColumn('billingname', array(
             'header'=> Mage::helper('tlbarion')->__('Billing Name'),
             'width' => '',
             'type'  => 'text',
             'index' => 'billing_name',
         ));
-		
+		*/
 		$this->addColumn('amount', array(
             'header'=> Mage::helper('tlbarion')->__('Amount'),
             'type'  => 'currency',

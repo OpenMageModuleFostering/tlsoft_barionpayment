@@ -23,6 +23,11 @@
                     <tlsoft>
 						<title>TLSoft Extensions</title>
 						<sort_order>50</sort_order>
+						<children>
+							<tlbarion translate="title" module="tlbarion">
+								<title><![CDATA[Barion Transactions]]></title>
+							</tlbarion>
+						</children>
 					</tlsoft>
                 </children>
              </admin>
