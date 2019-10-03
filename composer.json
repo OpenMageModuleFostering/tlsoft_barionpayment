@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/TLSoft_BarionPayment",
+    "name": "OpenMageModuleFostering\/TLSoft_BarionPayment",
     "type": "magento-module",
     "license": "OSL",
     "homepage": "",
     "description": "Accepts payment trough Barion's (www.barion.com) Payment Gateway.",
     "authors": [
-    {
-        "name": "Laszlo Opauszki",
-        "email": "info@tlsoft.hu"
-    }
-],
+        {
+            "name": "Laszlo Opauszki",
+            "email": "info@tlsoft.hu"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
